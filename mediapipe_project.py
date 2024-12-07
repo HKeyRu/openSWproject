@@ -35,6 +35,24 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 connection_drawing_spec=mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2)
             )            
 
+
+            right_x = str(int(results.pose_landmarks.landmark[19].x * 100))
+            right_y = str(int(results.pose_landmarks.landmark[19].y * 100))
+            left_x = str(int(results.pose_landmarks.landmark[20].x * 100))
+            left_y = str(int(results.pose_landmarks.landmark[20].y * 100))
+
+            middle_right = str(int(results.pose_landmarks.landmark[12].y*100))
+
+            # 좌표를 화면에 출력
+            cv2.putText(frame, "right : " + right_x + " , " + right_y, 
+                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.putText(frame, "left : " + left_x + " , " + left_y, 
+                        (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            
+            if right_y > middle_right:
+                cv2.putText(frame,"down",(10,90),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame,"up",(10,90),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         # 결과 화면 출력
         cv2.imshow('Pose Detection', frame)
 
