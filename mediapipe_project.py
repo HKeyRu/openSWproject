@@ -35,6 +35,30 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 connection_drawing_spec=mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2)
             )            
 
+            right_wrist_y = str(int(results.pose_landmarks.landmark[15].y * 100))
+            right_shoulder_y = str(int(results.pose_landmarks.landmark[11].y*100))
+
+            left_wrist_y = str(int(results.pose_landmarks.landmark[16].y * 100))
+            left_shoulder_y = str(int(results.pose_landmarks.landmark[12].y * 100))
+
+            left_elbow_y = str(int(results.pose_landmarks.landmark[14].y * 100))
+            right_elbow_y = str(int(results.pose_landmarks.landmark[13].y * 100))
+
+            #왼손 들기
+            if (left_shoulder_y > left_elbow_y and left_elbow_y > left_wrist_y):
+                cv2.putText(frame,"left hand up",(10,60),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame,"not left hand up",(10,60),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            #오른손 들기
+            if (right_shoulder_y > right_elbow_y and right_elbow_y > right_wrist_y):
+                cv2.putText(frame,"right hand up",(10,90),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame,"not right hand up",(10,90),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            #양팔 좌우로 뻗기 
+            if (abs(int(right_shoulder_y) -int(right_wrist_y)) < 10 and abs(int(left_shoulder_y) - int(left_wrist_y)) < 10):
+                cv2.putText(frame,"spread",(10,30),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame,"not spread",(10,30),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         # 결과 화면 출력
         cv2.imshow('Pose Detection', frame)
 
