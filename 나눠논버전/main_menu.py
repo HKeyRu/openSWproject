@@ -57,7 +57,7 @@ def main_menu_screen(screen):
             break
 
         # Mediapipe로 포즈 감지
-        frame_rgb = cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB)  # BGR -> RGB로 변환
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # BGR -> RGB로 변환
         results = pose.process(frame_rgb)
 
         # 포즈 랜드마크를 웹캠 이미지 위에 그리기
