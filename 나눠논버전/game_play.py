@@ -65,6 +65,21 @@ def game_play_screen(screen, selected_music):
     image_clap2 = pygame.transform.scale(image_clap2, (150,150))
     image_clap2_rect = image_clap2.get_rect(topleft=(0,0))
 
+    image_left_hand_up = pygame.image.load("left_hand_up.png")
+    image_left_hand_up = pygame.transform.scale(image_left_hand_up, (150,150))
+    image_left_hand_up_rect = image_left_hand_up.get_rect(topleft=(0,0))
+
+    image_right_hand_up = pygame.image.load("right_hand_up.png")
+    image_right_hand_up = pygame.transform.scale(image_right_hand_up, (150,150))
+    image_right_hand_up_rect = image_right_hand_up.get_rect(topleft=(0,0))
+
+    image_m = pygame.image.load("pose_m.png")
+    image_m = pygame.transform.scale(image_m, (150,150))
+    image_m_rect = image_m.get_rect(topleft=(0,0))
+
+    image_a = pygame.image.load("pose_a.png")
+    image_a = pygame.transform.scale(image_a, (150,150))
+    image_a_rect = image_a.get_rect(topleft=(0,0))
 
     # 애니메이션 변수
     animation_duration = 3000  # 애니메이션의 전체 지속 시간 (ms)
@@ -74,6 +89,11 @@ def game_play_screen(screen, selected_music):
     animation_y2_start_ms = 9000
     animation_c2_start_ms = 10000
     animation_clap2_start_ms = 14000
+    animation_left_hand_up_start_ms = 19000
+    animation_right_hand_up_start_ms = 23000
+    animation_m_start_ms = 27000
+    animation_a_start_ms = 30000
+    
 
     animation_y_started = False  # 애니메이션 시작 여부
     animation_c_started = False
@@ -81,6 +101,10 @@ def game_play_screen(screen, selected_music):
     animation_y2_started = False
     animation_c2_started = False
     animation_clap2_started = False
+    animation_left_hand_up_started = False
+    animation_right_hand_up_started = False
+    animation_m_started = False
+    animation_a_started = False
 
     animation_y_complete = False  # 애니메이션 완료 여부
     animation_c_complete = False
@@ -88,6 +112,11 @@ def game_play_screen(screen, selected_music):
     animation_y2_complete = False 
     animation_c2_complete = False
     animation_clap2_complete = False
+    animation_left_hand_up_complete = False
+    animation_right_hand_up_complete = False
+    animation_m_complete = False 
+    animation_a_complete = False
+
     
     while running:
         for event in pygame.event.get():
@@ -102,7 +131,6 @@ def game_play_screen(screen, selected_music):
             print("웹캠 프레임을 읽을 수 없습니다!")
             break
         
-
         # Mediapipe로 포즈 감지
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = pose.process(frame_rgb)
@@ -129,28 +157,24 @@ def game_play_screen(screen, selected_music):
             current_time = pygame.time.get_ticks() - start_time
 
             #채보 초기화 & 제작
-            left_hand_up_time = 1000000
-            right_hand_up_time = 1000000
-            clap_time = 1000000
-            Y_pose_time = 1000000
-            M_pose_time = 1000000
-            C_pose_time = 1000000
-            A_pose_time = 1000000
 
             clap_time = 5933
             Y_pose_time = 6900 # 3900 + 3초
-            #M_pose_time = 7833
+            Y2_pose_time = 11000
+            M_pose_time = 29000
             C_pose_time = 8233
-            #A_pose_time = 8500
+            C2_pose_time = 12000
+            A_pose_time = 32000
+            clap2_time = 16000
 
+            left_hand_up_time = 21000
+            right_hand_up_time = 25000
 
             left_wrist_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST].x
             left_elbow_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ELBOW].x
-            left_shoulder_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER].x
 
             right_wrist_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].x
             right_elbow_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW].x
-            right_shoulder_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].x
 
             left_wrist_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST].y
             left_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER].y
@@ -160,7 +184,6 @@ def game_play_screen(screen, selected_music):
             right_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].y
             right_elbow_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW].y
 
-            right_eye_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_EYE].x
             nose_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x
             nose_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y
 
@@ -194,8 +217,26 @@ def game_play_screen(screen, selected_music):
                         status_text = "Miss"
                         miss += 1
                     text_time = pygame.time.get_ticks()
+                #박수 2
+                if(clap2_time - 200 <= current_time <= clap2_time + 200):
+                    if(abs(left_wrist_x - right_wrist_x) < 0.2):
+                        status_text = "Perfect"
+                        perfect += 1
+                    else:
+                        status_text = "Miss"
+                        miss += 1
+                    text_time = pygame.time.get_ticks()
                 #Y
                 if(Y_pose_time -200 <= current_time <= Y_pose_time + 200):
+                    if(left_elbow_x < left_wrist_x and left_shoulder_y > left_elbow_y and right_elbow_x > right_wrist_x and right_shoulder_y > right_elbow_y):
+                        status_text = "Perfect"
+                        perfect += 1
+                    else:
+                        status_text = "Miss"
+                        miss += 1
+                    text_time = pygame.time.get_ticks()
+                #Y2
+                if(Y2_pose_time -200 <= current_time <= Y2_pose_time + 200):
                     if(left_elbow_x < left_wrist_x and left_shoulder_y > left_elbow_y and right_elbow_x > right_wrist_x and right_shoulder_y > right_elbow_y):
                         status_text = "Perfect"
                         perfect += 1
@@ -221,10 +262,17 @@ def game_play_screen(screen, selected_music):
                         status_text = "Miss"
                         miss += 1
                     text_time = pygame.time.get_ticks()
+                if(C2_pose_time -200 <= current_time <= C2_pose_time + 200):
+                    if(right_wrist_x < nose_x and left_wrist_x < nose_x):
+                        status_text = "Perfect"
+                        perfect += 1
+                    else:
+                        status_text = "Miss"
+                        miss += 1
+                    text_time = pygame.time.get_ticks()
                 #A
                 if(A_pose_time -200 <= current_time <= A_pose_time + 200):
-                    if(left_wrist_y < 0.5 and left_shoulder_y > left_elbow_y and right_wrist_x < 0.5 and right_shoulder_y > right_elbow_y
-                       and abs(left_wrist_x - right_wrist_x) < 0.2):
+                    if(left_shoulder_y > left_elbow_y and right_shoulder_y > right_elbow_y and abs(left_wrist_x - right_wrist_x) < 0.2):
                         status_text = "Perfect"
                         perfect += 1
                     else:
@@ -263,6 +311,15 @@ def game_play_screen(screen, selected_music):
             screen.blit(image_c2, image_c2_rect)
         if not animation_clap2_complete:
             screen.blit(image_clap2, image_clap2_rect)
+        if not animation_left_hand_up_complete:
+            screen.blit(image_left_hand_up, image_left_hand_up_rect)
+        if not animation_right_hand_up_complete:
+            screen.blit(image_right_hand_up, image_right_hand_up_rect)
+        if not animation_m_complete:
+            screen.blit(image_m, image_m_rect)
+        if not animation_a_complete:
+            screen.blit(image_a, image_a_rect)
+        
         # 애니메이션 시작 조건 확인
         if not animation_y_started and current_time <= animation_y_start_ms:
             animation_y_started = True  # 애니메이션 시작 시간 도달
@@ -276,6 +333,14 @@ def game_play_screen(screen, selected_music):
             animation_c2_started = True
         if not animation_clap2_started and current_time <= animation_clap2_start_ms:
             animation_clap2_started = True
+        if not animation_left_hand_up_started and current_time <= animation_left_hand_up_start_ms:
+            animation_left_hand_up_started = True
+        if not animation_right_hand_up_started and current_time <= animation_right_hand_up_start_ms:
+            animation_right_hand_up_started = True
+        if not animation_m_started and current_time <= animation_m_start_ms:
+            animation_m_started = True
+        if not animation_a_started and current_time <= animation_a_start_ms:
+            animation_a_started = True
 
         # 애니메이션 진행
         if animation_y_started and not animation_y_complete:
@@ -339,6 +404,45 @@ def game_play_screen(screen, selected_music):
             else:
                 image_clap2_rect.x = 640 - image_clap2_rect.width // 2 
                 animation_clap2_complete = True
+        
+        if animation_left_hand_up_started and not animation_left_hand_up_complete:
+            elapsed_time = current_time - animation_left_hand_up_start_ms 
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_left_hand_up_rect.x = int(1280 * progress - image_left_hand_up_rect.width)
+            else:
+                image_left_hand_up_rect.x = 640 - image_left_hand_up_rect.width // 2 
+                animation_left_hand_up_complete = True
+
+        if animation_right_hand_up_started and not animation_right_hand_up_complete:
+            elapsed_time = current_time - animation_right_hand_up_start_ms 
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_right_hand_up_rect.x = int(1280 * progress - image_right_hand_up_rect.width)
+            else:
+                image_right_hand_up_rect.x = 640 - image_right_hand_up_rect.width // 2 
+                animation_right_hand_up_complete = True
+        
+        if animation_m_started and not animation_m_complete:
+            elapsed_time = current_time - animation_m_start_ms  
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_m_rect.x = int(1280 * progress - image_m_rect.width)
+            else:
+                image_m_rect.x = 640 - image_m_rect.width // 2 
+                animation_m_complete = True
+        if animation_a_started and not animation_a_complete:
+            elapsed_time = current_time - animation_a_start_ms  
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_a_rect.x = int(1280 * progress - image_a_rect.width)
+            else:
+                image_a_rect.x = 640 - image_a_rect.width // 2 
+                animation_a_complete = True
 
         # 선택된 음악 표시
         music_text = font.render(f"Playing: {selected_music}", True, (100,100,100))
