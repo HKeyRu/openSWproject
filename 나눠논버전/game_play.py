@@ -38,17 +38,56 @@ def game_play_screen(screen, selected_music):
     perfect = 0
     miss = 0
     notes = 25
+    score = 0
 
     # 애니메이션에 사용할 이미지
-    image = pygame.image.load("A.png")  # A.png 이미지 파일 불러오기
-    image = pygame.transform.scale(image, (150, 150))  # 이미지 크기 조정
-    image_rect = image.get_rect(topleft=(0, 0))  # 이미지의 초기 위치 (왼쪽 상단)
+    image_y = pygame.image.load("pose_y.png")  # pose_y.png 이미지 파일 불러오기
+    image_y = pygame.transform.scale(image_y, (150, 150))  # 이미지 크기 조정
+    image_y_rect = image_y.get_rect(topleft=(0, 0))  # 이미지의 초기 위치 (왼쪽 상단)
+
+    image_c = pygame.image.load("pose_c.png")
+    image_c = pygame.transform.scale(image_c, (150,150))
+    image_c_rect = image_c.get_rect(topleft=(0,0))
+
+    image_clap = pygame.image.load("clap.png")
+    image_clap = pygame.transform.scale(image_clap, (150,150))
+    image_clap_rect = image_clap.get_rect(topleft=(0,0))
+
+    image_y2 = pygame.image.load("pose_y.png")
+    image_y2 = pygame.transform.scale(image_y2, (150,150))
+    image_y2_rect = image_y2.get_rect(topleft=(0,0))
+
+    image_c2 = pygame.image.load("pose_c.png")
+    image_c2 = pygame.transform.scale(image_c2, (150,150))
+    image_c2_rect = image_c2.get_rect(topleft=(0,0))
+
+    image_clap2 = pygame.image.load("clap.png")
+    image_clap2 = pygame.transform.scale(image_clap2, (150,150))
+    image_clap2_rect = image_clap2.get_rect(topleft=(0,0))
+
 
     # 애니메이션 변수
     animation_duration = 3000  # 애니메이션의 전체 지속 시간 (ms)
-    animation_start_ms = 5000  # 애니메이션 시작 기준 시간 (ms)
-    animation_started = False  # 애니메이션 시작 여부
-    animation_complete = False  # 애니메이션 완료 여부
+    animation_y_start_ms = 5000  # 애니메이션 시작 기준 시간 (ms)
+    animation_c_start_ms = 6000
+    animation_clap_start_ms = 4000
+    animation_y2_start_ms = 9000
+    animation_c2_start_ms = 10000
+    animation_clap2_start_ms = 14000
+
+    animation_y_started = False  # 애니메이션 시작 여부
+    animation_c_started = False
+    animation_clap_started = False
+    animation_y2_started = False
+    animation_c2_started = False
+    animation_clap2_started = False
+
+    animation_y_complete = False  # 애니메이션 완료 여부
+    animation_c_complete = False
+    animation_clap_complete = False
+    animation_y2_complete = False 
+    animation_c2_complete = False
+    animation_clap2_complete = False
     
     while running:
         for event in pygame.event.get():
@@ -212,25 +251,94 @@ def game_play_screen(screen, selected_music):
 
 
         # 애니메이션 이미지 그리기
-        if not animation_complete:
-            screen.blit(image, image_rect)  # 애니메이션 중 이미지 그리기
-
+        if not animation_y_complete:
+            screen.blit(image_y, image_y_rect)  # 애니메이션 중 이미지 그리기
+        if not animation_c_complete:
+            screen.blit(image_c, image_c_rect)
+        if not animation_clap_complete:
+            screen.blit(image_clap, image_clap_rect)
+        if not animation_y2_complete:
+            screen.blit(image_y2, image_y2_rect)
+        if not animation_c2_complete:
+            screen.blit(image_c2, image_c2_rect)
+        if not animation_clap2_complete:
+            screen.blit(image_clap2, image_clap2_rect)
         # 애니메이션 시작 조건 확인
-        if not animation_started and current_time <= animation_start_ms:
-            animation_started = True  # 애니메이션 시작 시간 도달
+        if not animation_y_started and current_time <= animation_y_start_ms:
+            animation_y_started = True  # 애니메이션 시작 시간 도달
+        if not animation_c_started and current_time <= animation_c_start_ms:
+            animation_c_started = True
+        if not animation_clap_started and current_time <= animation_clap_start_ms:
+            animation_clap_started = True
+        if not animation_y2_started and current_time <= animation_y2_start_ms:
+            animation_y2_started = True
+        if not animation_c2_started and current_time <= animation_c2_start_ms:
+            animation_c2_started = True
+        if not animation_clap2_started and current_time <= animation_clap2_start_ms:
+            animation_clap2_started = True
 
         # 애니메이션 진행
-        if animation_started and not animation_complete:
-            elapsed_time = current_time - animation_start_ms  # 애니메이션 시작 이후 경과 시간
+        if animation_y_started and not animation_y_complete:
+            elapsed_time = current_time - animation_y_start_ms  # 애니메이션 시작 이후 경과 시간
 
             if elapsed_time < animation_duration:
                 # 진행 비율에 맞게 이미지 이동
                 progress = elapsed_time / animation_duration
-                image_rect.x = int(1280 * progress - image_rect.width)
+                image_y_rect.x = int(1280 * progress - image_y_rect.width)
             else:
                 # 애니메이션이 끝났다면 완료 플래그 설정
-                image_rect.x = 640 - image_rect.width // 2  # 화면 중앙에 정렬
-                animation_complete = True
+                image_y_rect.x = 640 - image_y_rect.width // 2  # 화면 중앙에 정렬
+                animation_y_complete = True
+
+        if animation_c_started and not animation_c_complete:
+            elapsed_time = current_time - animation_c_start_ms  
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_c_rect.x = int(1280 * progress - image_c_rect.width)
+            else:
+                image_c_rect.x = 640 - image_c_rect.width // 2 
+                animation_c_complete = True
+
+        if animation_clap_started and not animation_clap_complete:
+            elapsed_time = current_time - animation_clap_start_ms 
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_clap_rect.x = int(1280 * progress - image_clap_rect.width)
+            else:
+                image_clap_rect.x = 640 - image_clap_rect.width // 2 
+                animation_clap_complete = True
+
+        if animation_y2_started and not animation_y2_complete:
+            elapsed_time = current_time - animation_y2_start_ms  
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_y2_rect.x = int(1280 * progress - image_y2_rect.width)
+            else:
+                image_y2_rect.x = 640 - image_y2_rect.width // 2  
+                animation_y2_complete = True
+
+        if animation_c2_started and not animation_c2_complete:
+            elapsed_time = current_time - animation_c2_start_ms  
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_c2_rect.x = int(1280 * progress - image_c2_rect.width)
+            else:
+                image_c2_rect.x = 640 - image_c2_rect.width // 2 
+                animation_c2_complete = True
+
+        if animation_clap2_started and not animation_clap2_complete:
+            elapsed_time = current_time - animation_clap2_start_ms 
+
+            if elapsed_time < animation_duration:
+                progress = elapsed_time / animation_duration
+                image_clap2_rect.x = int(1280 * progress - image_clap2_rect.width)
+            else:
+                image_clap2_rect.x = 640 - image_clap2_rect.width // 2 
+                animation_clap2_complete = True
 
         # 선택된 음악 표시
         music_text = font.render(f"Playing: {selected_music}", True, (100,100,100))
