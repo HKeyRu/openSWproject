@@ -27,6 +27,10 @@ def game_play_screen(screen, selected_music):
     running = True
     song_started = False
 
+    start_time = pygame.time.get_ticks()
+
+    status_text = None
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -65,6 +69,11 @@ def game_play_screen(screen, selected_music):
 
         #Mediapipe 포즈 
         if results.pose_landmarks:
+            
+            current_time = pygame.time.get_ticks() - start_time
+
+            time = 3000
+            clap_time = 6000
             left_wrist_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST].x
             right_wrist_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].x
 
@@ -75,28 +84,33 @@ def game_play_screen(screen, selected_music):
             right_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].y
             right_elbow_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW].y
 
-            #왼,오른손 들기
-            if (left_wrist_y < 0.5 and left_shoulder_y > left_elbow_y):
-                text = "Left Hand Up"
-            elif (right_wrist_y < 0.5 and right_shoulder_y > right_elbow_y):
-                text = "Right Hand Up"
-            else:
-                text = "No Hands Up"
+            if status_text == None:
+                #왼손 들기
+                if (current_time == time):
+                    if (left_wrist_y < 0.5 and left_shoulder_y > left_elbow_y):
+                        status_text = "Perfect"
+                    else:
+                        status_text = "Miss" 
+                    text_time = pygame.time.get_ticks()  
+                #박수
 
-            status_text = font.render(text, True, WHITE)
-            screen.blit(status_text, (50, 50))
-
-            #박수
-            if(abs(left_wrist_x - right_wrist_x) < 0.2):
-                text1 = "Clap"
-            else:
-                text1 = "no Clap"
-
-            clap_text = font.render(text1, True, WHITE)
-            screen.blit(clap_text, (50, 100))
+                elif(clap_time - 200 <= current_time <= clap_time + 200):
+                    if(abs(left_wrist_x - right_wrist_x) < 0.2):
+                        status_text = "Perfect"
+                    else:
+                        status_text = "Miss"
+                    text_time = pygame.time.get_ticks()
 
         # Pygame 화면에 그리기
         screen.blit(frame_surface, (0, 0))
+
+        if status_text:
+            enable_time = pygame.time.get_ticks() - text_time
+            if enable_time < 1500:
+                status_screen = font.render(status_text,True,WHITE)
+                screen.blit(status_screen, (50, 150))
+            else:
+                status_text = None
 
 
         # 선택된 음악 표시
