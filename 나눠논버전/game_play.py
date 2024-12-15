@@ -8,14 +8,17 @@ pygame.mixer.init()
 pygame.mixer.music.load("ymca.mp3")
 
 def game_play_screen(screen, selected_music):
+    from result_screen import results_screen
     WHITE = (255, 255, 255)
-    font = pygame.font.Font(None, 40)
+    font = pygame.font.Font(None, 70)
     
     # OpenCV 웹캠 초기화
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("웹캠을 열 수 없습니다!")
         return
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
     # Mediapipe 초기화
     mp_drawing = mp.solutions.drawing_utils
@@ -33,8 +36,20 @@ def game_play_screen(screen, selected_music):
     status_text = None
 
     perfect = 0
-    notes = 10
+    miss = 0
+    notes = 25
 
+    # 애니메이션에 사용할 이미지
+    image = pygame.image.load("A.png")  # A.png 이미지 파일 불러오기
+    image = pygame.transform.scale(image, (150, 150))  # 이미지 크기 조정
+    image_rect = image.get_rect(topleft=(0, 0))  # 이미지의 초기 위치 (왼쪽 상단)
+
+    # 애니메이션 변수
+    animation_duration = 3000  # 애니메이션의 전체 지속 시간 (ms)
+    animation_start_ms = 5000  # 애니메이션 시작 기준 시간 (ms)
+    animation_started = False  # 애니메이션 시작 여부
+    animation_complete = False  # 애니메이션 완료 여부
+    
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -47,7 +62,6 @@ def game_play_screen(screen, selected_music):
         if not ret:
             print("웹캠 프레임을 읽을 수 없습니다!")
             break
-        
         
 
         # Mediapipe로 포즈 감지
@@ -75,12 +89,21 @@ def game_play_screen(screen, selected_music):
             
             current_time = pygame.time.get_ticks() - start_time
 
-            left_hand_up_time = 5000
-            clap_time = 8000
-            Y_pose_time = 10000
-            M_pose_time = 13000
-            C_pose_time = 16000
-            A_pose_time = 19000
+            #채보 초기화 & 제작
+            left_hand_up_time = 1000000
+            right_hand_up_time = 1000000
+            clap_time = 1000000
+            Y_pose_time = 1000000
+            M_pose_time = 1000000
+            C_pose_time = 1000000
+            A_pose_time = 1000000
+
+            clap_time = 5933
+            Y_pose_time = 6900 # 3900 + 3초
+            #M_pose_time = 7833
+            C_pose_time = 8233
+            #A_pose_time = 8500
+
 
             left_wrist_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST].x
             left_elbow_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ELBOW].x
@@ -98,8 +121,11 @@ def game_play_screen(screen, selected_music):
             right_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].y
             right_elbow_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW].y
 
+            right_eye_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_EYE].x
+            nose_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x
             nose_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y
 
+            score = 10000000 * (perfect / notes)
 
             if status_text == None:
                 #왼손 들기
@@ -109,7 +135,17 @@ def game_play_screen(screen, selected_music):
                         perfect += 1
                     else:
                         status_text = "Miss" 
+                        miss += 1
                     text_time = pygame.time.get_ticks()  
+                #오른손 들기
+                if ( right_hand_up_time - 200<= current_time <= right_hand_up_time + 200):
+                    if (right_wrist_y < 0.5 and right_shoulder_y > right_elbow_y):
+                        status_text = "Perfect"
+                        perfect += 1
+                    else:
+                        status_text = "Miss" 
+                        miss += 1
+                    text_time = pygame.time.get_ticks() 
                 #박수
                 if(clap_time - 200 <= current_time <= clap_time + 200):
                     if(abs(left_wrist_x - right_wrist_x) < 0.2):
@@ -117,6 +153,7 @@ def game_play_screen(screen, selected_music):
                         perfect += 1
                     else:
                         status_text = "Miss"
+                        miss += 1
                     text_time = pygame.time.get_ticks()
                 #Y
                 if(Y_pose_time -200 <= current_time <= Y_pose_time + 200):
@@ -125,6 +162,7 @@ def game_play_screen(screen, selected_music):
                         perfect += 1
                     else:
                         status_text = "Miss"
+                        miss += 1
                     text_time = pygame.time.get_ticks()
                 #M
                 if(M_pose_time -200 <= current_time <= M_pose_time + 200):
@@ -133,14 +171,16 @@ def game_play_screen(screen, selected_music):
                         perfect += 1
                     else:
                         status_text = "Miss"
+                        miss += 1
                     text_time = pygame.time.get_ticks()
                 #C
                 if(C_pose_time -200 <= current_time <= C_pose_time + 200):
-                    if(right_shoulder_x > right_elbow_x and right_elbow_x > right_wrist_x and left_shoulder_x > left_elbow_x and left_elbow_x > left_wrist_x):
+                    if(right_wrist_x < nose_x and left_wrist_x < nose_x):
                         status_text = "Perfect"
                         perfect += 1
                     else:
                         status_text = "Miss"
+                        miss += 1
                     text_time = pygame.time.get_ticks()
                 #A
                 if(A_pose_time -200 <= current_time <= A_pose_time + 200):
@@ -150,6 +190,7 @@ def game_play_screen(screen, selected_music):
                         perfect += 1
                     else:
                         status_text = "Miss"
+                        miss += 1
                     text_time = pygame.time.get_ticks()
 
 
@@ -160,15 +201,43 @@ def game_play_screen(screen, selected_music):
         if status_text:
             enable_time = pygame.time.get_ticks() - text_time
             if enable_time < 1200:
-                status_screen = font.render(status_text,True,WHITE)
-                screen.blit(status_screen, (50, 150))
+                status_screen = font.render(status_text,True,(255, 198, 13))
+                screen.blit(status_screen, (580, 150))
             else:
                 status_text = None
 
+        # 스코어 표시
+        score_text = font.render(f"Score: {score:.0f}", True, (100, 100, 100))
+        screen.blit(score_text, (800, 600)) 
+
+
+        # 애니메이션 이미지 그리기
+        if not animation_complete:
+            screen.blit(image, image_rect)  # 애니메이션 중 이미지 그리기
+
+        # 애니메이션 시작 조건 확인
+        if not animation_started and current_time <= animation_start_ms:
+            animation_started = True  # 애니메이션 시작 시간 도달
+
+        # 애니메이션 진행
+        if animation_started and not animation_complete:
+            elapsed_time = current_time - animation_start_ms  # 애니메이션 시작 이후 경과 시간
+
+            if elapsed_time < animation_duration:
+                # 진행 비율에 맞게 이미지 이동
+                progress = elapsed_time / animation_duration
+                image_rect.x = int(1280 * progress - image_rect.width)
+            else:
+                # 애니메이션이 끝났다면 완료 플래그 설정
+                image_rect.x = 640 - image_rect.width // 2  # 화면 중앙에 정렬
+                animation_complete = True
 
         # 선택된 음악 표시
-        music_text = font.render(f"Playing: {selected_music}", True, WHITE)
-        screen.blit(music_text, (50, 50))
+        music_text = font.render(f"Playing: {selected_music}", True, (100,100,100))
+        screen.blit(music_text, (50, 600))
+
+        if(current_time >= 41500):
+            results_screen(screen, perfect, notes, selected_music)
 
         pygame.display.flip()
 

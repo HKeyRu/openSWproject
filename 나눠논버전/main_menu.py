@@ -27,7 +27,7 @@ def main_menu_screen(screen):
 
     # 게임 제목 텍스트 설정
     title_font = pygame.font.Font(None, 70)  # 큰 폰트 크기 설정
-    title_text = title_font.render("Game Name", True, WHITE)  # 게임 이름 텍스트 렌더링
+    title_text = title_font.render("Posing to Dance", True, WHITE)  # 게임 이름 텍스트 렌더링
     title_text_rect = title_text.get_rect(center=(640, 120))  # 중앙에 위치
 
     # 선택된 버튼 인덱스 초기화 (0: Start, 1: Quit)

@@ -7,7 +7,7 @@ def music_select_screen(screen):
     HIGHLIGHT_COLOR = (255, 0, 0)  # 선택된 항목 테두리 색상 (빨간색)
 
     font = pygame.font.Font(None, 40)
-    music_list = ["Song 1", "Song 2", "Song 3"]
+    music_list = ["YMCA", "Alone", "Shape of You"]
     music_buttons = [pygame.Rect(540, 150 + i * 100, 200, 60) for i in range(len(music_list))]
 
     selected_index = 0  # 기본 선택은 첫 번째 곡
@@ -36,6 +36,8 @@ def music_select_screen(screen):
                 pygame.draw.rect(screen, HIGHLIGHT_COLOR, button, 5)  # 테두리 두께 5
 
             music_text = font.render(music_list[i], True, WHITE)
-            screen.blit(music_text, button.move(50, 15).topleft)
+            # 텍스트를 버튼의 중앙에 정렬
+            text_rect = music_text.get_rect(center=button.center)
+            screen.blit(music_text, text_rect)
 
         pygame.display.flip()
