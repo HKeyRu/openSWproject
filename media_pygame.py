@@ -80,6 +80,9 @@ while running:
 
     # Mediapipe 결과 텍스트 출력
     if results.pose_landmarks:
+        left_wrist_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST].x
+        right_wrist_x = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].x
+
         left_wrist_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST].y
         right_wrist_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST].y
         left_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER].y
@@ -87,14 +90,25 @@ while running:
         right_shoulder_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER].y
         right_elbow_y = results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW].y
 
+        #왼,오른손 들기
         if (left_wrist_y < 0.5 and left_shoulder_y > left_elbow_y):
             text = "Left Hand Up"
         elif (right_wrist_y < 0.5 and right_shoulder_y > right_elbow_y):
             text = "Right Hand Up"
         else:
             text = "No Hands Up"
+
         status_text = font.render(text, True, WHITE)
         screen.blit(status_text, (50, 50))
+
+        #박수
+        if(abs(left_wrist_x - right_wrist_x) < 0.2):
+            text1 = "Clap"
+        else:
+            text1 = "no Clap"
+
+        clap_text = font.render(text1, True, WHITE)
+        screen.blit(clap_text, (50, 100))
 
     pygame.display.flip()
 
