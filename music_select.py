@@ -7,7 +7,7 @@ def music_select_screen(screen):
     HIGHLIGHT_COLOR = (255, 0, 0)  # 선택된 항목 테두리 색상 (빨간색)
 
     font = pygame.font.Font(None, 40)
-    music_list = ["YMCA", "Alone", "Shape of You"]
+    music_list = ["YMCA", "not ready", "not ready"]
     music_buttons = [pygame.Rect(540, 150 + i * 100, 200, 60) for i in range(len(music_list))]
 
     selected_index = 0  # 기본 선택은 첫 번째 곡

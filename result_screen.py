@@ -22,7 +22,6 @@ def results_screen(screen, perfect, note, selected_music):
                 if event.key == pygame.K_RETURN:  # Enter 키로 음악 선택
                     if selected_index == 0:  # 메인 메뉴 선택
                         main_menu_screen(screen)
-                        running = False
 
         # 화면 그리기
         screen.fill((0, 0, 0))
