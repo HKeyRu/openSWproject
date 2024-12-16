@@ -11,6 +11,7 @@ def game_play_screen(screen, selected_music):
     from result_screen import results_screen
     WHITE = (255, 255, 255)
     font = pygame.font.Font(None, 70)
+    current_time = 0
     
     # OpenCV 웹캠 초기화
     cap = cv2.VideoCapture(0)
